@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Block-based Language Tutorial</title>
+  
+  <!-- Load Blockly from a CDN (Zero installation required) -->
+  <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+  
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    #blocklyDiv { height: 400px; width: 100%; border: 1px solid #ccc; margin-bottom: 10px; }
+    #codeOutput { background: #1e1e1e; color: #00ff00; padding: 15px; min-height: 100px; white-space: pre-wrap; font-family: monospace; font-size: 16px;}
+    button { padding: 10px; font-size: 16px; cursor: pointer; background: #005A9C; color: white; border: none; border-radius: 4px;}
+    button:hover { background: #004070; }
+  </style>
+</head>
+<body>
+  <h2>My Custom "PseudoCode" Compiler</h2>
+  
+  <!-- The visual workspace -->
+  <div id="blocklyDiv"></div>
+  
+  <button onclick="generateCode()">Compile to Pseudo-Code</button>
+  
+  <h3>Generated Output:</h3>
+  <div id="codeOutput">Click the button above to generate code...</div>
+
+  <script>
+    // =================================================================
+    // STEP 1: LANGUAGE DEFINITION (Defining how custom blocks look)
+    // =================================================================
+    Blockly.defineBlocksWithJsonArray([
+      {
+        "type": "custom_print",
+        "message0": "say %1",
+        "args0":[
+          {
+            "type": "field_input",
+            "name": "TEXT_TO_PRINT",
+            "text": "Hello!"
+          }
+        ],
+        "previousStatement": null,
+        "nextStatement": null,
+        "colour": 160,
+        "tooltip": "Generates a print statement"
+      }
+    ]);
+
+    // =================================================================
+    // STEP 2: CREATE A CUSTOM GENERATOR (Best Practice)
+    // =================================================================
+    const pseudoGenerator = new Blockly.Generator('PseudoCode');
+    pseudoGenerator.INDENT = '    '; // Use 4 spaces for indentation
+
+    // Wrap the final generated code in a Main function
+    pseudoGenerator.finish = function(code) {
+      return "BEGIN PROGRAM\n" + code + "END PROGRAM";
+    };
+
+    // The scrub function traverses the connected blocks!
+    pseudoGenerator.scrub_ = function(block, code, thisOnly) {
+      // Find the next block attached below the current one
+      const nextBlock = block.nextConnection && block.nextConnection.targetBlock();
+      
+      // If there is a next block, and we are allowed to generate it, do so
+      const nextCode = thisOnly ? '' : pseudoGenerator.blockToCode(nextBlock);
+      
+      // Combine the current block's code with the next block's code
+      return code + nextCode;
+    };
+
+    // =================================================================
+    // STEP 3: CODE GENERATION RULES (How blocks translate to text)
+    // =================================================================
+    
+    // Rule for our CUSTOM block
+    pseudoGenerator.forBlock['custom_print'] = function(block, generator) {
+      var textValue = block.getFieldValue('TEXT_TO_PRINT');
+      return 'DISPLAY: "' + textValue + '"\n';
+    };
+
+    // Rule for the BUILT-IN repeat loop
+    pseudoGenerator.forBlock['controls_repeat_ext'] = function(block, generator) {
+      var repeats = generator.valueToCode(block, 'TIMES', 0) || '0';
+      if (repeats > 0) {
+        var branch = generator.statementToCode(block, 'DO');
+        return 'LOOP ' + repeats + ' TIMES:\n' + branch + 'END LOOP\n';
+      }
+      return ''; // If repeat count is zero, skip generating code for this block
+    };
+
+    // Rule for the BUILT-IN number block (required because the repeat loop uses it!)
+    pseudoGenerator.forBlock['math_number'] = function(block, generator) {
+      var number = block.getFieldValue('NUM');
+      return [number, 0]; // Return the number and precedence (0 means no parenthesis needed)
+    };
+
+    // =================================================================
+    // STEP 4: WORKSPACE SETUP (Loading the UI & Toolbox)
+    // =================================================================
+    var workspace = Blockly.inject('blocklyDiv', {
+      toolbox: {
+        "kind": "flyoutToolbox",
+        "contents":[
+          { "kind": "block", "type": "custom_print" },
+          { "kind": "block", "type": "controls_repeat_ext" },
+          { "kind": "block", "type": "math_number" }
+        ]
+      }
+    });
+
+    // =================================================================
+    // STEP 5: PRE-LOAD AN EXAMPLE PROGRAM
+    // =================================================================
+    const startingProgram = {
+      "blocks": {
+        "languageVersion": 0,
+        "blocks":[
+          {
+            "type": "controls_repeat_ext",
+            "x": 30, // X position on screen
+            "y": 30, // Y position on screen
+            "inputs": {
+              "TIMES": {
+                "shadow": {
+                  "type": "math_number",
+                  "fields": { "NUM": 3 }
+                }
+              },
+              "DO": {
+                "block": {
+                  "type": "custom_print",
+                  "fields": { "TEXT_TO_PRINT": "Hello from the Formal Methods Playground!" }
+                }
+              }
+            }
+          }
+        ]
+      }
+    };
+    
+    // Inject the JSON state into the workspace
+    Blockly.serialization.workspaces.load(startingProgram, workspace);
+
+    // =================================================================
+    // STEP 6: EXECUTION (What happens when we click the button)
+    // =================================================================
+    function generateCode() {
+      // Generate code using our specific pseudoGenerator
+      var code = pseudoGenerator.workspaceToCode(workspace);
+      document.getElementById('codeOutput').textContent = code;
+    }
+  </script>
+</body>
+</html>
