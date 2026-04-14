@@ -1,71 +1,74 @@
 import * as Blockly from 'blockly';
 
-// Export a function to define our blocks
 export function defineBlocks() {
   Blockly.defineBlocksWithJsonArray([
     {
-      'type': 'myite',
-      'message0': 'if %1 then %2 else %3',
+      'type': 'turtle_move',
+      'message0': 'move %1 by %2 px',
       'args0': [
         {
+          'type': 'field_dropdown',
+          'name': 'DIRECTION',
+          'options': [
+            ['forward', 'FORWARD'],
+            ['backward', 'BACKWARD'],
+          ],
+        },
+        {
           'type': 'input_value',
-          'name': 'MEMBER_VALUE',
-        },
-        {
-          'type': 'input_statement',
-          'name': 'MEMBERS_THEN',
-        },
-        {
-          'type': 'input_statement',
-          'name': 'MEMBERS_ELSE',
+          'name': 'DISTANCE',
+          'check': 'Number',
         },
       ],
       'previousStatement': null,
+      'nextStatement': null,
+      'colour': 160,
+    },
+    {
+      'type': 'turtle_turn',
+      'message0': 'turn %1 by %2 deg',
+      'args0': [
+        {
+          'type': 'field_dropdown',
+          'name': 'DIRECTION',
+          'options': [
+            ['left', 'LEFT'],
+            ['right', 'RIGHT'],
+          ],
+        },
+        {
+          'type': 'input_value',
+          'name': 'ANGLE',
+          'check': 'Number',
+        },
+      ],
+      'previousStatement': null,
+      'nextStatement': null,
       'colour': 230,
     },
     {
-      "type": "move",
-      "message0": "Move %1",
-      "args0": [
-        {
-          "type": "field_dropdown",
-          "name": "VALUE",
-          "options": [
-            ["FORWARD", "forward"],
-            ["LEFT", "left"],
-            ["RIGHT", "right"],
-            ["BACKWARD", "backward"],
-            ["STOP", "stop"],
-          ]
-        }
-      ],
-      "previousStatement": null,
-      "colour": 355
-    },
-    {
-      'type': 'dist_compare',
-      'message0': 'distance < %1',
+      'type': 'turtle_pen',
+      'message0': 'pen %1',
       'args0': [
         {
-          'type': 'field_number',
-          'name': 'DISTANCE',
-          //'text': '',
+          'type': 'field_dropdown',
+          'name': 'STATE',
+          'options': [
+            ['down', 'DOWN'],
+            ['up', 'UP'],
+          ],
         },
       ],
-      'output': null,
-      'colour': 110,
+      'previousStatement': null,
+      'nextStatement': null,
+      'colour': 20,
     },
     {
-      'type': 'emgOff_pressed',
-      'message0': 'emgOff',
-      'output': null,
-      'colour': 110,
+      'type': 'turtle_home',
+      'message0': 'go home',
+      'previousStatement': null,
+      'nextStatement': null,
+      'colour': 65,
     },
-    {
-      'type': 'doWork_pressed',
-      'message0': 'doWork',
-      'output': null,
-      'colour': 110,
-    }
   ]);
 }

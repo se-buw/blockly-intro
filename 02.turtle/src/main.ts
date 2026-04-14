@@ -1,30 +1,145 @@
 import * as Blockly from 'blockly';
 import { defineBlocks } from './blocks';
-import { pseudoGenerator } from './generator';
+import { turtleGenerator } from './generator';
+import { TurtleSimulator, runTurtleProgram } from './simulator';
 
-// 1. Initialize the custom blocks
 defineBlocks();
 
-// 2. Inject Blockly into the HTML div
+const starterWorkspaceState = {
+  blocks: {
+    languageVersion: 0,
+    blocks: [
+      {
+        type: 'controls_repeat_ext',
+        x: 40,
+        y: 40,
+        inputs: {
+          TIMES: {
+            block: {
+              type: 'math_number',
+              fields: {
+                NUM: 4,
+              },
+            },
+          },
+          DO: {
+            block: {
+              type: 'turtle_move',
+              fields: {
+                DIRECTION: 'FORWARD',
+              },
+              inputs: {
+                DISTANCE: {
+                  block: {
+                    type: 'math_number',
+                    fields: {
+                      NUM: 90,
+                    },
+                  },
+                },
+              },
+              next: {
+                block: {
+                  type: 'turtle_turn',
+                  fields: {
+                    DIRECTION: 'RIGHT',
+                  },
+                  inputs: {
+                    ANGLE: {
+                      block: {
+                        type: 'math_number',
+                        fields: {
+                          NUM: 90,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    ],
+  },
+};
+
 const workspace = Blockly.inject('blocklyDiv', {
   toolbox: {
-    "kind": "flyoutToolbox",
-    "contents":[
-      { "kind": "block", "type": "custom_print" },
-      { "kind": "block", "type": "controls_repeat_ext" }, // The Loop
-      { "kind": "block", "type": "math_number" }         // The Number
-    ]
-  }
+    kind: 'flyoutToolbox',
+    contents: [
+      { kind: 'block', type: 'turtle_move' },
+      { kind: 'block', type: 'turtle_turn' },
+      { kind: 'block', type: 'turtle_pen' },
+      { kind: 'block', type: 'turtle_home' },
+      { kind: 'block', type: 'controls_repeat_ext' },
+      { kind: 'block', type: 'math_number' },
+    ],
+  },
 });
 
-// 3. Attach the button event listener safely
-const generateBtn = document.getElementById('generateBtn');
-const codeOutput = document.getElementById('codeOutput');
+Blockly.serialization.workspaces.load(starterWorkspaceState, workspace);
 
-if (generateBtn && codeOutput) {
-  generateBtn.addEventListener('click', () => {
-    // Generate the code using our typed generator
-    const code: string = pseudoGenerator.workspaceToCode(workspace);
+const generateBtn = document.getElementById('generateBtn');
+const runBtn = document.getElementById('runBtn');
+const codeOutput = document.getElementById('codeOutput');
+const simulatorCanvas = document.getElementById('simulatorCanvas');
+
+function getGeneratedCode(): string {
+  return turtleGenerator.workspaceToCode(workspace);
+}
+
+if (
+  generateBtn instanceof HTMLButtonElement &&
+  runBtn instanceof HTMLButtonElement &&
+  codeOutput instanceof HTMLElement &&
+  simulatorCanvas instanceof HTMLCanvasElement
+) {
+  const simulator = new TurtleSimulator(simulatorCanvas);
+  let isRunning = false;
+
+  const showCode = () => {
+    const code = getGeneratedCode();
     codeOutput.textContent = code;
+    return code;
+  };
+
+  const runProgram = async () => {
+    if (isRunning) {
+      return;
+    }
+
+    isRunning = true;
+    runBtn.disabled = true;
+    generateBtn.disabled = true;
+    const code = showCode();
+
+    try {
+      await runTurtleProgram(code, simulator);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      codeOutput.textContent = `${code}\n// Execution error: ${message}`;
+    } finally {
+      isRunning = false;
+      runBtn.disabled = false;
+      generateBtn.disabled = false;
+    }
+  };
+
+  generateBtn.addEventListener('click', () => {
+    showCode();
   });
+
+  runBtn.addEventListener('click', () => {
+    void runProgram();
+  });
+
+  workspace.addChangeListener(() => {
+    if (!isRunning) {
+      showCode();
+    }
+  });
+
+  showCode();
+  void runProgram();
 }
