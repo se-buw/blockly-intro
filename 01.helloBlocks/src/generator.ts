@@ -18,6 +18,14 @@ pseudoGenerator.forBlock['custom_print'] = function(block: Blockly.Block, genera
   return `DISPLAY: "${textValue}"\n`;
 };
 
+// Number literal block used by controls_repeat_ext value input.
+pseudoGenerator.forBlock['math_number'] = function(block: Blockly.Block): [string, number] {
+  const rawValue = block.getFieldValue('NUM');
+  const numericValue:number = Number(rawValue);
+  const safeValue:number = Number.isFinite(numericValue) ? numericValue : 0;
+  return [String(safeValue), 0];
+};
+
 // Example for a loop block (controls_repeat_ext)
 pseudoGenerator.forBlock['controls_repeat_ext'] = function(block: Blockly.Block, generator: Blockly.Generator): string {
   const timesCode: string = generator.valueToCode(block, 'TIMES', 0) || '0';
