@@ -29,7 +29,25 @@ describe('turtleGenerator', () => {
 
     const code = turtleGenerator.workspaceToCode(workspace);
 
-    expect(code).toBe('turtle.forward(50);\n');
+    expect(code).toBe('turtle.move(50);\n');
+
+    workspace.dispose();
+  });
+
+  it('encodes backward movement as a negative distance', () => {
+    const workspace = new Blockly.Workspace();
+    const moveBlock = workspace.newBlock('turtle_move');
+    const distanceBlock = workspace.newBlock('math_number');
+
+    moveBlock.setFieldValue('BACKWARD', 'DIRECTION');
+    distanceBlock.setFieldValue('25', 'NUM');
+    requireConnection(moveBlock.getInput('DISTANCE')?.connection ?? null).connect(
+      requireConnection(distanceBlock.outputConnection),
+    );
+
+    const code = turtleGenerator.workspaceToCode(workspace);
+
+    expect(code).toBe('turtle.move(-(25));\n');
 
     workspace.dispose();
   });
@@ -44,7 +62,7 @@ describe('turtleGenerator', () => {
 
     const code = turtleGenerator.workspaceToCode(workspace);
 
-    expect(code).toBe('turtle.penUp();\nturtle.home();\n');
+    expect(code).toBe('turtle.setPenDown(false);\nturtle.home();\n');
 
     workspace.dispose();
   });
@@ -74,7 +92,7 @@ describe('turtleGenerator', () => {
     const code = turtleGenerator.workspaceToCode(workspace);
 
     expect(code).toContain('for (var count = 0; count < 3; count++)');
-    expect(code).toContain('turtle.turnLeft(90);');
+    expect(code).toContain('turtle.turn(-(90));');
 
     workspace.dispose();
   });
@@ -85,7 +103,7 @@ describe('turtleGenerator', () => {
 
     const code = turtleGenerator.workspaceToCode(workspace);
 
-    expect(code).toBe('turtle.forward(0);\n');
+    expect(code).toBe('turtle.move(0);\n');
 
     workspace.dispose();
   });

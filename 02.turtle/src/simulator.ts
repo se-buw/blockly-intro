@@ -1,10 +1,7 @@
 type TurtleApi = {
-  forward(distance: number): void;
-  backward(distance: number): void;
-  turnLeft(angle: number): void;
-  turnRight(angle: number): void;
-  penUp(): void;
-  penDown(): void;
+  move(distance: number): void;
+  turn(angle: number): void;
+  setPenDown(isPenDown: boolean): void;
   home(): void;
 };
 
@@ -67,28 +64,16 @@ export class TurtleSimulator implements TurtleApi {
     this.render();
   }
 
-  forward(distance: number): void {
+  move(distance: number): void {
     this.commandQueue.push({ type: 'move', distance });
   }
 
-  backward(distance: number): void {
-    this.commandQueue.push({ type: 'move', distance: -distance });
-  }
-
-  turnLeft(angle: number): void {
-    this.commandQueue.push({ type: 'turn', angle: -angle });
-  }
-
-  turnRight(angle: number): void {
+  turn(angle: number): void {
     this.commandQueue.push({ type: 'turn', angle });
   }
 
-  penUp(): void {
-    this.commandQueue.push({ type: 'pen', down: false });
-  }
-
-  penDown(): void {
-    this.commandQueue.push({ type: 'pen', down: true });
+  setPenDown(isPenDown: boolean): void {
+    this.commandQueue.push({ type: 'pen', down: isPenDown });
   }
 
   home(): void {
