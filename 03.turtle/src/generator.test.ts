@@ -55,14 +55,26 @@ describe('turtleGenerator', () => {
   it('generates chained turtle statements in workspace order', () => {
     const workspace = new Blockly.Workspace();
 
-    const first = workspace.newBlock('turtle_pen');
-    const second = workspace.newBlock('turtle_home');
-    first.setFieldValue('UP', 'STATE');
+    const first = workspace.newBlock('turtle_move');
+    const firstDistance = workspace.newBlock('math_number');
+    const second = workspace.newBlock('turtle_turn');
+    const secondAngle = workspace.newBlock('math_number');
+
+    first.setFieldValue('FORWARD', 'DIRECTION');
+    firstDistance.setFieldValue('10', 'NUM');
+    second.setFieldValue('RIGHT', 'DIRECTION');
+    secondAngle.setFieldValue('90', 'NUM');
+    requireConnection(first.getInput('DISTANCE')?.connection ?? null).connect(
+      requireConnection(firstDistance.outputConnection),
+    );
+    requireConnection(second.getInput('ANGLE')?.connection ?? null).connect(
+      requireConnection(secondAngle.outputConnection),
+    );
     requireConnection(first.nextConnection).connect(requireConnection(second.previousConnection));
 
     const code = turtleGenerator.workspaceToCode(workspace);
 
-    expect(code).toBe('turtle.setPenDown(false);\nturtle.home();\n');
+    expect(code).toBe('turtle.move(10);\nturtle.turn(90);\n');
 
     workspace.dispose();
   });

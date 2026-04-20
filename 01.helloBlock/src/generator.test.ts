@@ -8,15 +8,16 @@ describe('pseudoGenerator', () => {
     defineBlocks();
   });
 
-  it('generates text for custom_print', () => {
+  it('generates a single greeting statement', () => {
     const workspace = new Blockly.Workspace();
 
-    const printBlock = workspace.newBlock('custom_print');
-    printBlock.setFieldValue('Hello', 'TEXT_TO_PRINT');
+    const greetingBlock = workspace.newBlock('greeting');
+    greetingBlock.setFieldValue('1', 'TIMES');
+    greetingBlock.setFieldValue('Blockly', 'SUBJECT');
 
-    const code = pseudoGenerator.blockToCode(printBlock);
+    const code = pseudoGenerator.blockToCode(greetingBlock);
 
-    expect(code).toBe('DISPLAY: "Hello"\n');
+    expect(code).toBe('DISPLAY: "Hello Blockly!"\n');
 
     workspace.dispose();
   });
@@ -24,46 +25,44 @@ describe('pseudoGenerator', () => {
   it('appends chained next blocks via scrub_', () => {
     const workspace = new Blockly.Workspace();
 
-    const first = workspace.newBlock('custom_print');
-    const second = workspace.newBlock('custom_print');
-    first.setFieldValue('First', 'TEXT_TO_PRINT');
-    second.setFieldValue('Second', 'TEXT_TO_PRINT');
+    const first = workspace.newBlock('greeting');
+    const second = workspace.newBlock('greeting');
+    first.setFieldValue('1', 'TIMES');
+    first.setFieldValue('Ada', 'SUBJECT');
+    second.setFieldValue('2', 'TIMES');
+    second.setFieldValue('Grace', 'SUBJECT');
     first.nextConnection?.connect(second.previousConnection);
 
     const code = pseudoGenerator.workspaceToCode(workspace);
 
-    expect(code).toBe('DISPLAY: "First"\nDISPLAY: "Second"\n');
+    expect(code).toBe('DISPLAY: "Hello Ada!"\nREPEAT 2 TIMES:\n  DISPLAY: "Hello Grace!"\n');
 
     workspace.dispose();
   });
 
-  it('generates repeat code from connected math_number input', () => {
+  it('wraps the greeting in a repeat block when TIMES is greater than one', () => {
     const workspace = new Blockly.Workspace();
 
-    const repeat = workspace.newBlock('controls_repeat_ext');
-    const times = workspace.newBlock('math_number');
-    const body = workspace.newBlock('custom_print');
+    const greetingBlock = workspace.newBlock('greeting');
+    greetingBlock.setFieldValue('3', 'TIMES');
+    greetingBlock.setFieldValue('Blockly', 'SUBJECT');
 
-    times.setFieldValue('3', 'NUM');
-    body.setFieldValue('Loop', 'TEXT_TO_PRINT');
+    const code = pseudoGenerator.blockToCode(greetingBlock);
 
-    repeat.getInput('TIMES')?.connection?.connect(times.outputConnection);
-    repeat.getInput('DO')?.connection?.connect(body.previousConnection);
-
-    const code = pseudoGenerator.blockToCode(repeat);
-
-    expect(code).toBe('REPEAT 3 TIMES:\n  DISPLAY: "Loop"\n');
+    expect(code).toBe('REPEAT 3 TIMES:\n  DISPLAY: "Hello Blockly!"\n');
 
     workspace.dispose();
   });
 
-  it('uses 0 when repeat count input is not connected', () => {
+  it('returns an empty string when TIMES is less than one', () => {
     const workspace = new Blockly.Workspace();
-    const repeat = workspace.newBlock('controls_repeat_ext');
+    const greetingBlock = workspace.newBlock('greeting');
+    greetingBlock.setFieldValue('0', 'TIMES');
+    greetingBlock.setFieldValue('Nobody', 'SUBJECT');
 
-    const code = pseudoGenerator.blockToCode(repeat);
+    const code = pseudoGenerator.blockToCode(greetingBlock);
 
-    expect(code).toBe('REPEAT 0 TIMES:\n');
+    expect(code).toBe('');
 
     workspace.dispose();
   });
