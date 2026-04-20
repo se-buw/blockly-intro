@@ -119,4 +119,38 @@ describe('turtleGenerator', () => {
 
     workspace.dispose();
   });
+
+  it('generates routine definition and invocation code', () => {
+    const workspace = new Blockly.Workspace();
+    const routineDef = workspace.newBlock('routine_def');
+    const bodyMove = workspace.newBlock('turtle_move');
+    const bodyDistance = workspace.newBlock('math_number');
+
+    routineDef.setFieldValue('Square Step', 'ROUTINE_NAME');
+    bodyMove.setFieldValue('FORWARD', 'DIRECTION');
+    bodyDistance.setFieldValue('15', 'NUM');
+
+    requireConnection(bodyMove.getInput('DISTANCE')?.connection ?? null).connect(
+      requireConnection(bodyDistance.outputConnection),
+    );
+    requireConnection(routineDef.getInput('BODY')?.connection ?? null).connect(
+      requireConnection(bodyMove.previousConnection),
+    );
+
+    const code = turtleGenerator.workspaceToCode(workspace);
+    const callCode = turtleGenerator.forBlock['routine_call'](
+      {
+        getFieldValue(fieldName: string) {
+          return fieldName === 'ROUTINE_NAME' ? 'Square Step' : '';
+        },
+      } as unknown as Blockly.Block,
+      turtleGenerator,
+    );
+
+    expect(code).toContain('function Square Step()');
+    expect(code).toContain('turtle.move(15);');
+    expect(callCode).toContain('Square Step();');
+
+    workspace.dispose();
+  });
 });

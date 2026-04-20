@@ -72,6 +72,8 @@ const workspace = Blockly.inject('blocklyDiv', {
       { kind: 'block', type: 'turtle_turn' },
       { kind: 'block', type: 'controls_repeat_ext' },
       { kind: 'block', type: 'math_number' },
+      { kind: 'block', type: 'routine_def' },
+      { kind: 'block', type: 'routine_call' },
     ],
   },
 });
