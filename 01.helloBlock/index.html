@@ -7,13 +7,14 @@
       body { font-family: sans-serif; margin: 20px; }
       #blocklyDiv { height: 500px; width: 100%; }
       #codeOutput { background: #1e1e1e; color: #0f0; padding: 15px; font-family: monospace; white-space: pre-wrap;}
+      #errorOutput { background: #ebebeb; color: red; padding: 15px; font-family: monospace; font-weight: bold; }
     </style>
   </head>
   <body>
     <h2>Hello Blockly Visual Language</h2>
     <div id="blocklyDiv"></div>
-    <button id="generateBtn">Verify / Generate Code</button>
     <div id="codeOutput">Code will appear here...</div>
+    <div id="errorOutput">Errors will appear here...</div>
     
     <!-- Load our TypeScript file -->
     <script type="module" src="/src/main.ts"></script>
