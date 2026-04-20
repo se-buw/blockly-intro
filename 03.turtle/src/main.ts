@@ -18,7 +18,7 @@ const starterWorkspaceState = {
             block: {
               type: 'math_number',
               fields: {
-                NUM: 5,
+                NUM: 15,
               },
             },
           },
@@ -33,7 +33,7 @@ const starterWorkspaceState = {
                   block: {
                     type: 'math_number',
                     fields: {
-                      NUM: 120,
+                      NUM: 20,
                     },
                   },
                 },
@@ -49,7 +49,7 @@ const starterWorkspaceState = {
                       block: {
                         type: 'math_number',
                         fields: {
-                          NUM: 144,
+                          NUM: 48,
                         },
                       },
                     },
