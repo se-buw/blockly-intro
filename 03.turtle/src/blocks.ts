@@ -46,29 +46,5 @@ export function defineBlocks() {
       'nextStatement': null,
       'colour': 230,
     },
-    {
-      'type': 'turtle_pen',
-      'message0': 'pen %1',
-      'args0': [
-        {
-          'type': 'field_dropdown',
-          'name': 'STATE',
-          'options': [
-            ['down', 'DOWN'],
-            ['up', 'UP'],
-          ],
-        },
-      ],
-      'previousStatement': null,
-      'nextStatement': null,
-      'colour': 20,
-    },
-    {
-      'type': 'turtle_home',
-      'message0': 'go home',
-      'previousStatement': null,
-      'nextStatement': null,
-      'colour': 65,
-    },
   ]);
 }

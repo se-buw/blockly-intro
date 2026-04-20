@@ -1,8 +1,6 @@
 type TurtleApi = {
   move(distance: number): void;
   turn(angle: number): void;
-  setPenDown(isPenDown: boolean): void;
-  home(): void;
 };
 
 type Point = {
@@ -17,16 +15,13 @@ type PathSegment = {
 
 type Command =
   | { type: 'move'; distance: number }
-  | { type: 'turn'; angle: number }
-  | { type: 'pen'; down: boolean }
-  | { type: 'home' };
+  | { type: 'turn'; angle: number };
 
 export class TurtleSimulator implements TurtleApi {
   private readonly canvas: HTMLCanvasElement;
   private readonly context: CanvasRenderingContext2D;
   private position: Point;
   private headingDegrees: number;
-  private isPenDown: boolean;
   private readonly pathSegments: PathSegment[];
   private readonly commandQueue: Command[];
   private playbackId: number;
@@ -41,7 +36,6 @@ export class TurtleSimulator implements TurtleApi {
     this.context = context;
     this.position = { x: canvas.width / 2, y: canvas.height / 2 };
     this.headingDegrees = 0;
-    this.isPenDown = true;
     this.pathSegments = [];
     this.commandQueue = [];
     this.playbackId = 0;
@@ -58,7 +52,6 @@ export class TurtleSimulator implements TurtleApi {
     this.context.lineCap = 'round';
     this.position = { x: this.canvas.width / 2, y: this.canvas.height / 2 };
     this.headingDegrees = 0;
-    this.isPenDown = true;
     this.pathSegments.length = 0;
     this.commandQueue.length = 0;
     this.render();
@@ -70,14 +63,6 @@ export class TurtleSimulator implements TurtleApi {
 
   turn(angle: number): void {
     this.commandQueue.push({ type: 'turn', angle });
-  }
-
-  setPenDown(isPenDown: boolean): void {
-    this.commandQueue.push({ type: 'pen', down: isPenDown });
-  }
-
-  home(): void {
-    this.commandQueue.push({ type: 'home' });
   }
 
   async play(): Promise<void> {
@@ -98,14 +83,7 @@ export class TurtleSimulator implements TurtleApi {
         continue;
       }
 
-      if (command.type === 'pen') {
-        this.isPenDown = command.down;
-        this.render();
-        await this.wait(120, activePlaybackId);
-        continue;
-      }
 
-      await this.animateHome(activePlaybackId);
     }
 
     this.commandQueue.length = 0;
@@ -119,11 +97,8 @@ export class TurtleSimulator implements TurtleApi {
       y: start.y + Math.sin(radians) * distance,
     };
 
-    let animatedSegment: PathSegment | null = null;
-    if (this.isPenDown) {
-      animatedSegment = { start, end: { ...start } };
-      this.pathSegments.push(animatedSegment);
-    }
+    const animatedSegment: PathSegment = { start, end: { ...start } };
+    this.pathSegments.push(animatedSegment);
 
     const duration = Math.max(250, Math.min(1200, Math.abs(distance) * 8));
     const startedAt = performance.now();
@@ -141,9 +116,7 @@ export class TurtleSimulator implements TurtleApi {
       };
 
       this.position = nextPoint;
-      if (animatedSegment) {
-        animatedSegment.end = { ...nextPoint };
-      }
+      animatedSegment.end = { ...nextPoint };
       this.render();
 
       if (progress >= 1) {
@@ -178,20 +151,12 @@ export class TurtleSimulator implements TurtleApi {
     }
   }
 
-  private async animateHome(activePlaybackId: number): Promise<void> {
-    await this.animateMoveTo({ x: this.canvas.width / 2, y: this.canvas.height / 2 }, activePlaybackId);
-    await this.animateTurn(-this.headingDegrees, activePlaybackId);
-  }
-
   private async animateMoveTo(target: Point, activePlaybackId: number): Promise<void> {
     const start = { ...this.position };
     const distance = Math.hypot(target.x - start.x, target.y - start.y);
 
-    let animatedSegment: PathSegment | null = null;
-    if (this.isPenDown) {
-      animatedSegment = { start, end: { ...start } };
-      this.pathSegments.push(animatedSegment);
-    }
+    const animatedSegment: PathSegment = { start, end: { ...start } };
+    this.pathSegments.push(animatedSegment);
 
     const duration = Math.max(250, Math.min(1200, distance * 8));
     const startedAt = performance.now();
@@ -209,9 +174,7 @@ export class TurtleSimulator implements TurtleApi {
       };
 
       this.position = nextPoint;
-      if (animatedSegment) {
-        animatedSegment.end = { ...nextPoint };
-      }
+      animatedSegment.end = { ...nextPoint };
       this.render();
 
       if (progress >= 1) {

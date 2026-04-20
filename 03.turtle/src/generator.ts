@@ -22,11 +22,3 @@ turtleGenerator.forBlock['turtle_turn'] = function(block: Blockly.Block, generat
   return `turtle.turn(${signedAngle});\n`;
 };
 
-turtleGenerator.forBlock['turtle_pen'] = function(block: Blockly.Block): string {
-  const state = block.getFieldValue('STATE');
-  return state === 'UP' ? 'turtle.setPenDown(false);\n' : 'turtle.setPenDown(true);\n';
-};
-
-turtleGenerator.forBlock['turtle_home'] = function(): string {
-  return 'turtle.home();\n';
-};

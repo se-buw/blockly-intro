@@ -70,8 +70,6 @@ const workspace = Blockly.inject('blocklyDiv', {
     contents: [
       { kind: 'block', type: 'turtle_move' },
       { kind: 'block', type: 'turtle_turn' },
-      { kind: 'block', type: 'turtle_pen' },
-      { kind: 'block', type: 'turtle_home' },
       { kind: 'block', type: 'controls_repeat_ext' },
       { kind: 'block', type: 'math_number' },
     ],
@@ -80,7 +78,6 @@ const workspace = Blockly.inject('blocklyDiv', {
 
 Blockly.serialization.workspaces.load(starterWorkspaceState, workspace);
 
-const generateBtn = document.getElementById('generateBtn');
 const runBtn = document.getElementById('runBtn');
 const codeOutput = document.getElementById('codeOutput');
 const simulatorCanvas = document.getElementById('simulatorCanvas');
@@ -90,13 +87,11 @@ function getGeneratedCode(): string {
 }
 
 if (
-  generateBtn instanceof HTMLButtonElement &&
   runBtn instanceof HTMLButtonElement &&
   codeOutput instanceof HTMLElement &&
   simulatorCanvas instanceof HTMLCanvasElement
 ) {
   const simulator = new TurtleSimulator(simulatorCanvas);
-  let isRunning = false;
 
   const showCode = () => {
     const code = getGeneratedCode();
@@ -104,42 +99,12 @@ if (
     return code;
   };
 
-  const runProgram = async () => {
-    if (isRunning) {
-      return;
-    }
-
-    isRunning = true;
-    runBtn.disabled = true;
-    generateBtn.disabled = true;
-    const code = showCode();
-
-    try {
-      await runTurtleProgram(code, simulator);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      codeOutput.textContent = `${code}\n// Execution error: ${message}`;
-    } finally {
-      isRunning = false;
-      runBtn.disabled = false;
-      generateBtn.disabled = false;
-    }
-  };
-
-  generateBtn.addEventListener('click', () => {
-    showCode();
-  });
-
   runBtn.addEventListener('click', () => {
-    void runProgram();
+    void runTurtleProgram(showCode(), simulator);
   });
 
-  workspace.addChangeListener(() => {
-    if (!isRunning) {
-      showCode();
-    }
-  });
+  workspace.addChangeListener(() => showCode());
 
   showCode();
-  void runProgram();
+  void runTurtleProgram(getGeneratedCode(), simulator);
 }
