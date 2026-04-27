@@ -3,6 +3,14 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { defineBlocks } from './blocks';
 import { pseudoGenerator } from './generator';
 
+function requireConnection(connection: Blockly.Connection | null): Blockly.Connection {
+  if (!connection) {
+    throw new Error('Expected Blockly connection to exist.');
+  }
+
+  return connection;
+}
+
 describe('pseudoGenerator', () => {
   beforeAll(() => {
     defineBlocks();
@@ -31,7 +39,9 @@ describe('pseudoGenerator', () => {
     first.setFieldValue('Ada', 'SUBJECT');
     second.setFieldValue('2', 'TIMES');
     second.setFieldValue('Grace', 'SUBJECT');
-    first.nextConnection?.connect(second.previousConnection);
+    requireConnection(first.nextConnection).connect(
+      requireConnection(second.previousConnection),
+    );
 
     const code = pseudoGenerator.workspaceToCode(workspace);
 
