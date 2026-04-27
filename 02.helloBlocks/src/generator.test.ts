@@ -66,7 +66,9 @@ describe('pseudoGenerator', () => {
     requireConnection(second.getInput('SUBJECT')?.connection ?? null).connect(
       requireConnection(secondSubject.outputConnection),
     );
-    first.nextConnection?.connect(second.previousConnection);
+    requireConnection(first.nextConnection).connect(
+      requireConnection(second.previousConnection),
+    );
 
     const code = pseudoGenerator.workspaceToCode(workspace);
 
