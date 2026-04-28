@@ -30,20 +30,16 @@ Prerequisites:
 - Node.js (recent LTS version)
 - npm
 
-1. Open a terminal in the project you want to run, for example:
-  - `cd 00.template`
-  - `cd 01.helloBlock`
-  - `cd 02.helloBlocks`
-  - `cd 03.turtle`
-2. Install dependencies:
+1. Install dependencies:
   - `npm install`
-3. Start the development server:
-  - `npm run dev`
-4. Open the local URL printed by Vite (typically `http://localhost:5173` -- changes based on availability of ports).
+2. Start the development server:
+  - `npm run dev:<project-name>` (e.g., `npm run dev:helloBlock`)
+  - Available: `dev:template`, `dev:helloBlock`, `dev:helloBlocks`, `dev:turtle`
+3. Open the local URL printed by Vite (typically `http://localhost:5173` -- changes based on availability of ports).
 
 Optional commands (inside any project folder):
 - Run tests once: `npm test`
 - Run tests in watch mode: `npm run test:watch`
 - Build for production: `npm run build`
-- Preview production build: `npm run preview`
+- Preview production build: `npm run preview:<project-name>` (e.g., `npm run preview:helloBlock`)
 

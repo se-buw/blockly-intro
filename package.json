@@ -1,0 +1,32 @@
+{
+  "name": "blockly-intro",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev:template": "npm run dev -w 00.template",
+    "dev:helloBlock": "npm run dev -w 01.helloBlock",
+    "dev:helloBlocks": "npm run dev -w 02.helloBlocks",
+    "dev:turtle": "npm run dev -w 03.turtle",
+    "test": "npm run test --workspaces",
+    "build": "npm run build --workspaces",
+    "preview:template": "npm run preview -w 00.template",
+    "preview:helloBlock": "npm run preview -w 01.helloBlock",
+    "preview:helloBlocks": "npm run preview -w 02.helloBlocks",
+    "preview:turtle": "npm run preview -w 03.turtle"
+  },
+  "workspaces": [
+    "00.template",
+    "01.helloBlock",
+    "02.helloBlocks",
+    "03.turtle"
+  ],
+  "devDependencies": {
+    "jsdom": "^26.1.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.4",
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "blockly": "^12.5.1"
+  }
+}
