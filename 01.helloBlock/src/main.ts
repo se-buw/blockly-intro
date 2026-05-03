@@ -1,6 +1,5 @@
 import * as Blockly from 'blockly';
 import { defineBlocks } from './blocks';
-import { pseudoGenerator } from './generator';
 
 // define custom blocsks before setting up the workspace
 defineBlocks();
@@ -15,6 +14,7 @@ const workspace = Blockly.inject('blocklyDiv', {
   }
 });
 
+import { pseudoGenerator } from './generator';
 // show code and errors
 const codeOutput = document.getElementById('codeOutput');
 const errorOutput = document.getElementById('errorOutput');
