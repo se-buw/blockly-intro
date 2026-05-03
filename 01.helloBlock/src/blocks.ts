@@ -17,8 +17,7 @@ export function defineBlocks() {
         },
         {
           "type": "field_input",
-          "name": "SUBJECT",
-          "check": "Number",
+          "name": "SUBJECT"
         }
       ],
       "previousStatement": null,
