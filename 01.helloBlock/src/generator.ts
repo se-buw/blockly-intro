@@ -1,6 +1,6 @@
 import * as Blockly from 'blockly';
 
-// Create and configure the generator
+// Create and configure a fresh generator
 export const pseudoGenerator = new Blockly.Generator('PseudoCode');
 pseudoGenerator.INDENT = '  ';
 
@@ -11,9 +11,8 @@ pseudoGenerator.scrub_ = function(block: Blockly.Block, code: string, thisOnly?:
   return code + nextCode;
 };
 
-// Define the rule with strict TypeScript types
+// Define the rule to generate code for greeting blocks
 pseudoGenerator.forBlock['greeting'] = function(block: Blockly.Block): string {
-  // TypeScript knows getFieldValue returns a string
   const timesValue: number = Number(block.getFieldValue('TIMES'));
   if (!Number.isFinite(timesValue) || timesValue < 1) {
     return '';
