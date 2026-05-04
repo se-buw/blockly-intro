@@ -1,6 +1,14 @@
-# blockly-intro
+# Blockly Tutorial
 
 This repository serves as an introduction to developing [blockly](https://developers.google.com/blockly) languages and code generators. 
+
+It is part of a tutorial that teaches how to define visual Blockly languages and code generators. 
+
+In addition to the code in this repository, the tutorial comes with:
+- A [step-by-step guide to defining visual Blockly languages and code generators](https://se-buw.de/teaching/gse/tutorials/blockly/).
+- A [video walkthrough of the tutorial](https://www.youtube.com/watch?v=95_8n-FnHyo&list=PLGyeoukah9NbMQqFaMfuGMkAQ-yaaWUD3), explaining the concepts and demonstrating the implementation.
+
+## Blockly Examples in this Repository
 
 The repository contains a collection of examples of increasing complexity:
 - [01.helloBlock](./01.helloBlock): A very basic Hello-World-language and a code generator that produces Pseudo code. It demonstrated:
